@@ -27,5 +27,7 @@
 - name: Deploy and Configure Service Fabric
   hosts: security_group_service_fabric_demo
   remote_user: ubuntu
+  become: yes
+  become_method: sudo
   roles:
     - service-fabric

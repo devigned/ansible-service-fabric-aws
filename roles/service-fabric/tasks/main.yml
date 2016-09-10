@@ -1,3 +1,39 @@
 ---
   - name: Wait for SSH to come up
     wait_for: port=22 timeout=320 state=started
+
+  - name: Install (or update) docker.io
+    apt:
+      name: docker.io
+      state: latest
+      update_cache: yes
+
+  - name: Add the Service Fabric APT Repo
+    apt_repository: repo='deb [arch=amd64] http://apt-mo.trafficmanager.net/repos/servicefabric/ trusty main' state=present
+
+  - name: Add the Service Fabric APT Key
+    apt_key: keyserver=apt-mo.trafficmanager.net id=417A0893
+
+  - name: Add Ubuntu Keyserver
+    apt_key: keyserver=keyserver.ubuntu.com id=68576280
+
+  - name: Add the Nodejs APT Repo
+    apt_repository: repo='deb https://deb.nodesource.com/node_4.x trusty main' state=present
+
+  - name: Add the Nodejs APT Src Repo
+    apt_repository: repo='deb-src https://deb.nodesource.com/node_4.x trusty main' state=present
+
+  - name: Install Nodejs
+    apt:
+      name: nodejs
+      update_cache: yes
+
+  - name: Install Service Fabric SDK
+    raw: 'yes y | sudo apt-get install servicefabricsdk -y'
+
+  - name: Run SDK Setup
+    raw: '/opt/microsoft/sdk/servicefabric/sdksetup.sh'
+
+  - name: Run Cluster Setup
+    raw: 'cd /opt/microsoft/sdk/servicefabric/clustersetup && ./devclustersetup.sh'
+
