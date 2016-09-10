@@ -1,0 +1,31 @@
+---
+
+# This playbook deploys the entire Service Fabric Cluster
+
+- name: Provision EC2 Cluster and Refresh Inventory
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    - ami_id: ami-37ade157
+    - key_name: demo-ssh-key
+    - aws_region: us-west-1
+    - aws_tag: service-fabric-demo
+    - instance_type: m3.medium
+    - instance_count: 1
+  remote_user: ubuntu
+  roles:
+    - provision-ec2
+
+- name: Install Python
+  hosts: security_group_service_fabric_demo
+  remote_user: ubuntu
+  gather_facts: False
+  roles:
+    - common
+
+- name: Deploy and Configure Service Fabric
+  hosts: security_group_service_fabric_demo
+  remote_user: ubuntu
+  roles:
+    - service-fabric

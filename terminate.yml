@@ -1,0 +1,20 @@
+---
+
+### Kill all the instances
+
+- name: Terminate instances
+  hosts: all
+  connection: local
+  gather_facts: False
+  vars:
+    - aws_tag: service-fabric-demo
+    - key_name: demo-ssh-key
+    - aws_region: us-west-1
+  tasks:
+    - debug: var=host verbosity=4
+    - ec2:
+        state: 'absent'
+        region: "{{aws_region}}"
+        instance_ids: '{{ec2_id}}'
+        instance_tags:
+          Name: '{{aws_tag}}'
