@@ -9,7 +9,7 @@ uses the following:
 # extracted from ./site.yml
 
 ami_id: ami-a9a8e4c9            # EBS Optimized Ubuntu 16.04
-key_name: demo-ssh-key          # name of the public key to create
+key_name: demo-ssh-key          # name of the public key to create (uses ~/.ssh/id_rsa.pub)
 aws_region: us-west-1           # the deployment region
 aws_tag: service-fabric-demo    # tag used to count instances
 instance_type: m4.large         # using 2 CPU, 8 GB, 450 Mbps EBS backed
