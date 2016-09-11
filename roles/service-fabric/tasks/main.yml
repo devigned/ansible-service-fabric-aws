@@ -23,17 +23,22 @@
   - name: Add the Nodejs APT Src Repo
     apt_repository: repo='deb-src https://deb.nodesource.com/node_4.x trusty main' state=present
 
-  - name: Install Nodejs
-    apt:
-      name: nodejs
-      update_cache: yes
+  - name: Update APT Cache
+    apt: update_cache=yes
+
+  - name: Install Nodejs, OpenSSH Server and Client
+    apt: name={{item}}
+    with_items:
+       - nodejs
+       - openssh-server
+       - openssh-client
 
   - name: Install Service Fabric SDK
-    raw: 'yes y | sudo apt-get install servicefabricsdk -y'
+    raw: yes y | sudo apt-get install servicefabricsdk -y
 
   - name: Run SDK Setup
-    raw: '/opt/microsoft/sdk/servicefabric/sdksetup.sh'
+    raw: sudo /opt/microsoft/sdk/servicefabric/sdksetup.sh
 
   - name: Run Cluster Setup
-    raw: 'cd /opt/microsoft/sdk/servicefabric/clustersetup && ./devclustersetup.sh'
+    raw: cd /opt/microsoft/sdk/servicefabric/clustersetup && sudo ./devclustersetup.sh
 

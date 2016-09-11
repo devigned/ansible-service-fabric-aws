@@ -7,11 +7,11 @@
   connection: local
   gather_facts: False
   vars:
-    - ami_id: ami-37ade157
+    - ami_id: ami-a9a8e4c9
     - key_name: demo-ssh-key
     - aws_region: us-west-1
     - aws_tag: service-fabric-demo
-    - instance_type: m3.medium
+    - instance_type: m4.large  # using 2 CPU, 8 GB, 450 Mbps EBS backed
     - instance_count: 1
   remote_user: ubuntu
   roles:
