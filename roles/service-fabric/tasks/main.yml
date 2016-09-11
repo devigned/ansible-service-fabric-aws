@@ -24,6 +24,8 @@
     copy: src="{{ role_path }}/files/sshd_config" dest=/etc/ssh/sshd_config owner=0 group=0 mode=0644
     notify:
       - restart sshd
+      
+  - meta: flush_handlers
 
   - name: Install Nodejs, OpenSSH Server and Client, Docker
     apt: name={{item}}
