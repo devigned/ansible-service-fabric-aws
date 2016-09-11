@@ -20,11 +20,22 @@
   - name: Update APT Cache
     apt: update_cache=yes
 
+  - name: Gen Random Password
+    local_action: shell openssl passwd -1 -in /dev/urandom | head -1
+    register: gend_password
+    become: False
+
+  - name: blah
+    action: debug var=gend_password
+
+  - name: Set password for default ubuntu account b/c we will have PAM turned off (run the playbook with --extra-vars “password=")
+    user: name=ubuntu password='{{ gend_password['stdout'] }}'
+
   - name: Apply Insecure sshd_config
     copy: src="{{ role_path }}/files/sshd_config" dest=/etc/ssh/sshd_config owner=0 group=0 mode=0644
     notify:
       - restart sshd
-      
+
   - meta: flush_handlers
 
   - name: Install Nodejs, OpenSSH Server and Client, Docker
