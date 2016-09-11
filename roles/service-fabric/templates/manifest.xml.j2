@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClusterManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/2011/01/fabric" Name="Local-Cluster" Version="1.0">
+ <NodeTypes>
+  <NodeType Name="NodeType0">
+   <Endpoints>
+    <ClientConnectionEndpoint Port="19000"/>
+    <LeaseDriverEndpoint Port="19001"/>
+    <ClusterConnectionEndpoint Port="19002"/>
+    <HttpGatewayEndpoint Port="19080" Protocol="http"/>
+    <HttpApplicationGatewayEndpoint Port="19081" Protocol="http"/>
+    <ServiceConnectionEndpoint Port="19006"/>
+    <ApplicationEndpoints StartPort="30001" EndPort="31000"/>
+   </Endpoints>
+  </NodeType>
+  <NodeType Name="NodeType1">
+   <Endpoints>
+    <ClientConnectionEndpoint Port="19010"/>
+    <LeaseDriverEndpoint Port="19011"/>
+    <ClusterConnectionEndpoint Port="19012"/>
+    <HttpGatewayEndpoint Port="19082" Protocol="http"/>
+    <HttpApplicationGatewayEndpoint Port="19083" Protocol="http"/>
+    <ServiceConnectionEndpoint Port="19016"/>
+    <ApplicationEndpoints StartPort="31001" EndPort="32000"/>
+   </Endpoints>
+  </NodeType>
+  <NodeType Name="NodeType2">
+   <Endpoints>
+    <ClientConnectionEndpoint Port="19020"/>
+    <LeaseDriverEndpoint Port="19021"/>
+    <ClusterConnectionEndpoint Port="19022"/>
+    <HttpGatewayEndpoint Port="19084" Protocol="http"/>
+    <HttpApplicationGatewayEndpoint Port="19085" Protocol="http"/>
+    <ServiceConnectionEndpoint Port="19026"/>
+    <ApplicationEndpoints StartPort="32001" EndPort="33000"/>
+   </Endpoints>
+  </NodeType>
+  <NodeType Name="NodeType3">
+   <Endpoints>
+    <ClientConnectionEndpoint Port="19030"/>
+    <LeaseDriverEndpoint Port="19031"/>
+    <ClusterConnectionEndpoint Port="19032"/>
+    <HttpGatewayEndpoint Port="19086" Protocol="http"/>
+    <HttpApplicationGatewayEndpoint Port="19087" Protocol="http"/>
+    <ServiceConnectionEndpoint Port="19036"/>
+    <ApplicationEndpoints StartPort="33001" EndPort="34000"/>
+   </Endpoints>
+  </NodeType>
+  <NodeType Name="NodeType4">
+   <Endpoints>
+    <ClientConnectionEndpoint Port="19040"/>
+    <LeaseDriverEndpoint Port="19041"/>
+    <ClusterConnectionEndpoint Port="19042"/>
+    <HttpGatewayEndpoint Port="19088" Protocol="http"/>
+    <HttpApplicationGatewayEndpoint Port="19089" Protocol="http"/>
+    <ServiceConnectionEndpoint Port="19046"/>
+    <ApplicationEndpoints StartPort="34001" EndPort="35000"/>
+   </Endpoints>
+  </NodeType>
+ </NodeTypes>
+ <Infrastructure>
+  <WindowsServer IsScaleMin="true">
+    <NodeList>
+      {% for ip in groups['security_group_service_fabric_demo'] %}
+          <Node NodeName="_Node_0" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType0" FaultDomain="fd:/0" UpgradeDomain="0"/>
+          <Node NodeName="_Node_1" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType1" FaultDomain="fd:/1" UpgradeDomain="1"/>
+          <Node NodeName="_Node_2" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType2" FaultDomain="fd:/2" UpgradeDomain="2"/>
+          <Node NodeName="_Node_3" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" NodeTypeRef="NodeType3" FaultDomain="fd:/3" UpgradeDomain="3"/>
+          <Node NodeName="_Node_4" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" NodeTypeRef="NodeType4" FaultDomain="fd:/4" UpgradeDomain="4"/>
+      {% endfor %}
+   </NodeList>
+  </WindowsServer>
+ </Infrastructure>
+ <FabricSettings>
+  <Section Name="Security">
+   <Parameter Name="ClusterCredentialType" Value="None"/>
+   <Parameter Name="ServerAuthCredentialType" Value="None"/>
+  </Section>
+  <Section Name="FailoverManager">
+   <Parameter Name="ExpectedClusterSize" Value="4"/>
+   <Parameter Name="TargetReplicaSetSize" Value="5"/>
+   <Parameter Name="MinReplicaSetSize" Value="3"/>
+   <Parameter Name="ReconfigurationTimeLimit" Value="20"/>
+   <Parameter Name="BuildReplicaTimeLimit" Value="20"/>
+   <Parameter Name="CreateInstanceTimeLimit" Value="20"/>
+   <Parameter Name="PlacementTimeLimit" Value="20"/>
+  </Section>
+  <Section Name="ReconfigurationAgent">
+   <Parameter Name="ServiceApiHealthDuration" Value="20"/>
+   <Parameter Name="ServiceReconfigurationApiHealthDuration" Value="20"/>
+   <Parameter Name="LocalHealthReportingTimerInterval" Value="5"/>
+   <Parameter Name="IsDeactivationInfoEnabled" Value="true"/>
+   <Parameter Name="RAUpgradeProgressCheckInterval" Value="3"/>
+  </Section>
+  <Section Name="ClusterManager">
+   <Parameter Name="TargetReplicaSetSize" Value="5"/>
+   <Parameter Name="MinReplicaSetSize" Value="3"/>
+   <Parameter Name="UpgradeStatusPollInterval" Value="5"/>
+   <Parameter Name="UpgradeHealthCheckInterval" Value="5"/>
+   <Parameter Name="FabricUpgradeHealthCheckInterval" Value="5"/>
+  </Section>
+  <Section Name="NamingService">
+   <Parameter Name="TargetReplicaSetSize" Value="5"/>
+   <Parameter Name="MinReplicaSetSize" Value="3"/>
+  </Section>
+  <Section Name="ImageStoreService">
+   <Parameter Name="TargetReplicaSetSize" Value="3"/>
+   <Parameter Name="MinReplicaSetSize" Value="1"/>
+  </Section>
+  <Section Name="FileStoreService">
+   <Parameter Name="PrimaryAccountType" Value="LocalUser"/>
+   <Parameter Name="PrimaryAccountNTLMPasswordSecret" Value="Foo"/>
+   <Parameter Name="SecondaryAccountType" Value="LocalUser"/>
+   <Parameter Name="SecondaryAccountNTLMPasswordSecret" Value="Bar"/>
+  </Section>
+  <Section Name="Management">
+   <Parameter Name="ImageStoreConnectionString" Value="fabric:ImageStore"/>
+   <Parameter Name="ImageCachingEnabled" Value="false"/>
+   <Parameter Name="EnableDeploymentAtDataRoot" Value="true"/>
+  </Section>
+  <Section Name="Hosting">
+   <Parameter Name="EndpointProviderEnabled" Value="true"/>
+   <Parameter Name="RunAsPolicyEnabled" Value="true"/>
+   <Parameter Name="DeactivationScanInterval" Value="60"/>
+   <Parameter Name="DeactivationGraceInterval" Value="10"/>
+   <Parameter Name="EnableProcessDebugging" Value="true"/>
+   <Parameter Name="ServiceTypeRegistrationTimeout" Value="20"/>
+   <Parameter Name="CacheCleanupScanInterval" Value="300"/>
+  </Section>
+  <Section Name="HttpGateway">
+   <Parameter Name="IsEnabled" Value="true"/>
+  </Section>
+  <Section Name="PlacementAndLoadBalancing">
+   <Parameter Name="MinLoadBalancingInterval" Value="300"/>
+  </Section>
+  <Section Name="Federation">
+   <Parameter Name="NodeIdGeneratorVersion" Value="V4"/>
+  </Section>
+  <Section Name="Trace/Etw">
+   <Parameter Name="Level" Value="4"/>
+  </Section>
+  <Section Name="Diagnostics">
+   <Parameter Name="ProducerInstances" Value="WinFabLttProducer"/>
+   <Parameter Name="ConsumerInstances" Value="AzureWinFabCsv"/>
+  </Section>
+  <Section Name="WinFabLttProducer">
+   <Parameter Name="ProducerType" Value="LttProducer"/>
+   <Parameter Name="IsEnabled" Value="true"/>
+  </Section>
+  <Section Name="AzureWinFabCsv">
+   <Parameter Name="ConsumerType" Value="AzureBlobCsvUploader"/>
+   <Parameter Name="ProducerInstance" Value="WinFabLttProducer"/>
+   <Parameter Name="IsEnabled" Value="true"/>
+   <Parameter Name="StoreConnectionString" Value="xstore:DefaultEndpointsProtocol=https;AccountName=[];AccountKey=[]"/>
+   <Parameter Name="ContainerName" Value="fabriclogs"/>
+  </Section>
+  <Section Name="RunAs_DCA">
+   <Parameter Name="RunAsAccountType" Value="LocalSystem"/>
+  </Section>
+ </FabricSettings>
+</ClusterManifest>
