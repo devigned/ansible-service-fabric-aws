@@ -28,6 +28,27 @@ instance_count: 2               # number of machines
 - From the root directory of this repo
 - `ansible-playbook site.yml -i ec2.py`
 
+## Using the cluster
+- Log on to the cluster `ssh ubuntu@{cluster ip}`
+- Setup an ssh tunnel to view the dashboard locally `ssh -N -p 22 -C ubuntu@{cluster ip} -L 19080:localhost:19080`
+    - After starting the tunnel, open your local browser to http://localhost:19080
+- To deploy to the cluster
+    - you can setup additional ssh tunnels and work locally
+    - you can open external ports to expose the cluster publicly (by default, the only public port open is 22)
+- Example
+    - `ssh ubuntu@{cluster ip}`
+    - `yo azuresf`
+        - name the app `testapp`
+        - select `Reliable Actor Service - Java`
+        - name the actor `testactor`
+    - `cd testapp`
+    - `gradle`
+    - `azuresfcli config mode arm`
+    - `azuresfcli servicefabric cluster connect http://localhost:19080`
+    - `./install.sh`
+    - Look to your dashboard and you should see your application running in the cluster.
+    - $$$$
+
 ## Teardown a Cluster
 - From the root directory of this repo
 - `ansible-playbook terminate.yml -i ec2.py`
