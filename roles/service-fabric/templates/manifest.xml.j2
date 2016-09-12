@@ -61,11 +61,11 @@
   <WindowsServer IsScaleMin="true">
     <NodeList>
       {% for ip in groups['security_group_service_fabric_demo'] %}
-          <Node NodeName="_Node_0" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType0" FaultDomain="fd:/0" UpgradeDomain="0"/>
-          <Node NodeName="_Node_1" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType1" FaultDomain="fd:/1" UpgradeDomain="1"/>
-          <Node NodeName="_Node_2" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType2" FaultDomain="fd:/2" UpgradeDomain="2"/>
-          <Node NodeName="_Node_3" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" NodeTypeRef="NodeType3" FaultDomain="fd:/3" UpgradeDomain="3"/>
-          <Node NodeName="_Node_4" IPAddressOrFQDN="{{ hostvars[ip]['ec2_ip_address'] }}" NodeTypeRef="NodeType4" FaultDomain="fd:/4" UpgradeDomain="4"/>
+          <Node NodeName="Node_0_{{ ip }}" IPAddressOrFQDN="{{ hostvars[ip]['ec2_private_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType0" FaultDomain="fd:/0" UpgradeDomain="0"/>
+          <Node NodeName="Node_1_{{ ip }}" IPAddressOrFQDN="{{ hostvars[ip]['ec2_private_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType1" FaultDomain="fd:/1" UpgradeDomain="1"/>
+          <Node NodeName="Node_2_{{ ip }}" IPAddressOrFQDN="{{ hostvars[ip]['ec2_private_ip_address'] }}" IsSeedNode="true" NodeTypeRef="NodeType2" FaultDomain="fd:/2" UpgradeDomain="2"/>
+          <Node NodeName="Node_3_{{ ip }}" IPAddressOrFQDN="{{ hostvars[ip]['ec2_private_ip_address'] }}" NodeTypeRef="NodeType3" FaultDomain="fd:/3" UpgradeDomain="3"/>
+          <Node NodeName="Node_4_{{ ip }}" IPAddressOrFQDN="{{ hostvars[ip]['ec2_private_ip_address'] }}" NodeTypeRef="NodeType4" FaultDomain="fd:/4" UpgradeDomain="4"/>
       {% endfor %}
    </NodeList>
   </WindowsServer>

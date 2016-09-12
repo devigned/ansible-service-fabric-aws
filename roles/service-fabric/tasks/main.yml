@@ -24,12 +24,17 @@
     local_action: shell openssl passwd -1 -in /dev/urandom | head -1
     register: gend_password
     become: False
+    tags:
+      - fabric_users
 
-  - name: blah
-    action: debug var=gend_password
+  - name: Set password for default accounts b/c we will have PAM turned off (run the playbook with --extra-vars “password=")
+    user: name={{ item }} password='{{ gend_password['stdout'] }}'
+    with_items:
+      - ubuntu
+      - sfuser
 
-  - name: Set password for default ubuntu account b/c we will have PAM turned off (run the playbook with --extra-vars “password=")
-    user: name=ubuntu password='{{ gend_password['stdout'] }}'
+  - name: Turn off password required pam (this is bad)
+    shell: sed -i 's/nullok_secure/nullok/' /etc/pam.d/common-auth
 
   - name: Apply Insecure sshd_config
     copy: src="{{ role_path }}/files/sshd_config" dest=/etc/ssh/sshd_config owner=0 group=0 mode=0644
@@ -46,23 +51,20 @@
        - openssh-client
        - docker.io
 
-  - name: Install Service Fabric SDK
-    raw: yes y | sudo apt-get install servicefabricsdk -y
-
-  - name: Run SDK Setup
-    raw: sudo /opt/microsoft/sdk/servicefabric/sdksetup.sh
-
-  - name: Run Cluster Setup
-    raw: cd /opt/microsoft/sdk/servicefabric/clustersetup && sudo ./devclustersetup.sh
-
-  - debug: var=groups['security_group_service_fabric_demo'] verbosity=4
-
-  - name: Generate and Copy Cluster Manifest
-    template: src="{{ role_path }}/templates/manifest.xml.j2" dest=/opt/microsoft/sdk/servicefabric/clustersetup/starting_manifest.xml mode=0644
-
   - name: Open firewall for cluster communication
     ufw: rule=allow
     with_items:
       - 30001:35000
       - 19000:19100
 
+  - name: Install Service Fabric SDK
+    raw: yes y | sudo apt-get install servicefabricsdk -y
+
+  - name: Generate and Copy Cluster Manifest
+    template: src="{{ role_path }}/templates/manifest.xml.j2" dest=/opt/microsoft/sdk/servicefabric/clustersetup/nonsecure/servicefabric-scalemin.xml mode=0644
+
+  - name: Run SDK Setup
+    raw: sudo /opt/microsoft/sdk/servicefabric/sdksetup.sh
+
+  - name: Run Cluster Setup
+    raw: cd /opt/microsoft/sdk/servicefabric/clustersetup && sudo ./devclustersetup.sh
