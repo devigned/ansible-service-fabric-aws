@@ -70,10 +70,6 @@ Here are some other details to help out anyone not familiar with Ansible.
 │   │   └── tasks
 │   │       └── main.yml
 │   └── service-fabric
-│       ├── files
-│       │   └── sshd_config
-│       ├── handlers
-│       │   └── main.yml
 │       ├── tasks
 │       │   └── main.yml
 │       └── templates
@@ -87,8 +83,6 @@ Here are some other details to help out anyone not familiar with Ansible.
     - **provision-ec2:** handles all of the AWS related provisioning
     - **common:** handles bootstrapping the initial Ubuntu image (adds Python 2.7)
     - **service-fabric:** installs and builds the SF cluster
-        - **files** contains static files to be deployed to the cluster
-        - **handlers** contains rules for restaring services
         - **tasks** contains the tasks to be executed during deployment
         - **templates** contains jinja2 template to be deployed to the cluster
 - **terminate.yml** destroys clusters

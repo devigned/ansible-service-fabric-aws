@@ -20,28 +20,12 @@
   - name: Update APT Cache
     apt: update_cache=yes
 
-  - name: Gen Random Password
-    local_action: shell openssl passwd -1 -in /dev/urandom | head -1
-    register: gend_password
-    become: False
-    tags:
-      - fabric_users
+  - name: Set up authorized_keys for the ubuntu user
+    authorized_key: user=ubuntu key="{{ item }}"
+    with_file:
+      - "{{ role_path }}/files/mr.pub"
+      - "{{ role_path }}/files/rajeet.pub"
 
-  - name: Set password for default accounts b/c we will have PAM turned off (run the playbook with --extra-vars “password=")
-    user: name={{ item }} password='{{ gend_password['stdout'] }}'
-    with_items:
-      - ubuntu
-      - sfuser
-
-  - name: Turn off password required pam (this is bad)
-    shell: sed -i 's/nullok_secure/nullok/' /etc/pam.d/common-auth
-
-  - name: Apply Insecure sshd_config
-    copy: src="{{ role_path }}/files/sshd_config" dest=/etc/ssh/sshd_config owner=0 group=0 mode=0644
-    notify:
-      - restart sshd
-
-  - meta: flush_handlers
 
   - name: Install Nodejs, OpenSSH Server and Client, Docker
     apt: name={{item}}
@@ -52,19 +36,16 @@
        - docker.io
 
   - name: Open firewall for cluster communication
-    ufw: rule=allow
-    with_items:
-      - 30001:35000
-      - 19000:19100
+    ufw: state=enabled policy=allow
 
   - name: Install Service Fabric SDK
     raw: yes y | sudo apt-get install servicefabricsdk -y
 
   - name: Generate and Copy Cluster Manifest
-    template: src="{{ role_path }}/templates/manifest.xml.j2" dest=/opt/microsoft/sdk/servicefabric/clustersetup/nonsecure/servicefabric-scalemin.xml mode=0644
+    template: src="{{ role_path }}/templates/manifest.xml" dest=/opt/microsoft/sdk/servicefabric/clustersetup/nonsecure/servicefabric-scalemin.xml mode=0775
 
   - name: Run SDK Setup
     raw: sudo /opt/microsoft/sdk/servicefabric/sdksetup.sh
 
   - name: Run Cluster Setup
-    raw: cd /opt/microsoft/sdk/servicefabric/clustersetup && sudo ./devclustersetup.sh
+    raw: cd /opt/microsoft/sdk/servicefabric/clustersetup && sudo ./devclustercleanup.sh && sudo ./devclustersetup.sh
