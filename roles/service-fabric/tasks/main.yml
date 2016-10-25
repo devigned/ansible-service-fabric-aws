@@ -56,8 +56,12 @@
   - debconf: name='servicefabricsdkcommon' question='servicefabricsdkcommon/accepted-eula-v1' value='true' vtype='select'
   - debconf: name='servicefabricsdkcommon' question='servicefabricsdkcommon/accepted-all-eula' value='true' vtype='select'
 
-  - name: Install Service Fabric SDK
-    raw: yes y | sudo apt-get install servicefabricsdkcommon -y
+  - name: Install the SDKs
+    apt: name={{item}}
+    with_items:
+        - servicefabricsdkcommon
+        - servicefabricsdkcsharp
+        - servicefabricsdkjava
 
   - name: Generate and Copy Cluster Manifest
     template: src="{{ role_path }}/templates/manifest.xml" dest=/opt/microsoft/sdk/servicefabric/common/clustersetup/nonsecure/servicefabric-scalemin.xml mode=0775
