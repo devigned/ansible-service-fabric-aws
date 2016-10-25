@@ -13,7 +13,7 @@ key_name: demo-ssh-key          # name of the public key to create (uses ~/.ssh/
 aws_region: us-west-1           # the deployment region
 aws_tag: service-fabric-demo    # tag used to count instances
 instance_type: m4.large         # using 2 CPU, 8 GB, 450 Mbps EBS backed
-instance_count: 2               # number of machines
+instance_count: 5               # number of machines
 ```
 
 ## Setup for AWS and Ansible
