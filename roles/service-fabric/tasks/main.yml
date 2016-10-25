@@ -26,26 +26,50 @@
       - "{{ role_path }}/files/mr.pub"
       - "{{ role_path }}/files/rajeet.pub"
 
+  # - name: Set password for default account (run the playbook with --extra-vars “password=")
+  #   user: name={{ item }} password='*HelloWorld1'
+  #   with_items:
+  #     - ubuntu
+
+  - name: Apply Insecure sshd_config
+    copy: src="{{ role_path }}/files/sshd_config" dest=/etc/ssh/sshd_config owner=0 group=0 mode=0644
+    notify:
+      - restart sshd
+
+  - meta: flush_handlers
 
   - name: Install Nodejs, OpenSSH Server and Client, Docker
     apt: name={{item}}
     with_items:
-       - nodejs
-       - openssh-server
-       - openssh-client
-       - docker.io
+        - nodejs
+        - openssh-server
+        - openssh-client
+        - docker.io
 
   - name: Open firewall for cluster communication
     ufw: state=enabled policy=allow
 
+  - debconf: name='servicefabric' question='servicefabric/presenteula' value='false' vtype='select'
+  - debconf: name='servicefabric' question='servicefabric/accepted-eula-v1' value='true' vtype='select'
+  - debconf: name='servicefabric' question='servicefabric/accepted-all-eula' value='true' vtype='select'
+  - debconf: name='servicefabricsdkcommon' question='servicefabricsdkcommon/presenteula' value='false' vtype='select'
+  - debconf: name='servicefabricsdkcommon' question='servicefabricsdkcommon/accepted-eula-v1' value='true' vtype='select'
+  - debconf: name='servicefabricsdkcommon' question='servicefabricsdkcommon/accepted-all-eula' value='true' vtype='select'
+
   - name: Install Service Fabric SDK
-    raw: yes y | sudo apt-get install servicefabricsdk -y
+    raw: yes y | sudo apt-get install servicefabricsdkcommon -y
 
   - name: Generate and Copy Cluster Manifest
-    template: src="{{ role_path }}/templates/manifest.xml" dest=/opt/microsoft/sdk/servicefabric/clustersetup/nonsecure/servicefabric-scalemin.xml mode=0775
+    template: src="{{ role_path }}/templates/manifest.xml" dest=/opt/microsoft/sdk/servicefabric/common/clustersetup/nonsecure/servicefabric-scalemin.xml mode=0775
 
   - name: Run SDK Setup
-    raw: sudo /opt/microsoft/sdk/servicefabric/sdksetup.sh
+    raw: sudo /opt/microsoft/sdk/servicefabric/common/sdkcommonsetup.sh
+
+  - name: Run Java SDK Setup
+    raw: sudo /opt/microsoft/sdk/servicefabric/java/sdkjavasetup.sh
+
+  - name: Run dotnet SDK Setup
+    raw: sudo /opt/microsoft/sdk/servicefabric/csharp/sdkcsharpsetup.sh
 
   - name: Run Cluster Setup
-    raw: cd /opt/microsoft/sdk/servicefabric/clustersetup && sudo ./devclustercleanup.sh && sudo ./devclustersetup.sh
+    raw: cd /opt/microsoft/sdk/servicefabric/common/clustersetup && sudo ./devclustercleanup.sh && sudo ./devclustersetup.sh
