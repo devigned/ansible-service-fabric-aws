@@ -20,7 +20,7 @@
   - name: Update APT Cache
     apt: update_cache=yes
 
-  - name: Apply Insecure sshd_config
+  - name: Apply less secure sshd_config
     copy: src="{{ role_path }}/files/sshd_config" dest=/etc/ssh/sshd_config owner=0 group=0 mode=0644
     notify:
       - restart sshd
