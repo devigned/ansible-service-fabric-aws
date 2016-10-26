@@ -20,17 +20,6 @@
   - name: Update APT Cache
     apt: update_cache=yes
 
-  - name: Set up authorized_keys for the ubuntu user
-    authorized_key: user=ubuntu key="{{ item }}"
-    with_file:
-      - "{{ role_path }}/files/mr.pub"
-      - "{{ role_path }}/files/rajeet.pub"
-
-  # - name: Set password for default account (run the playbook with --extra-vars “password=")
-  #   user: name={{ item }} password='*HelloWorld1'
-  #   with_items:
-  #     - ubuntu
-
   - name: Apply Insecure sshd_config
     copy: src="{{ role_path }}/files/sshd_config" dest=/etc/ssh/sshd_config owner=0 group=0 mode=0644
     notify:
